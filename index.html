@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho de Compras</title>
+</head>
+<body>
+  <h1>Loja Virtual</h1>
+  
+  <h3>Produtos Disponíveis:</h3>
+  <div id="produtos"></div>
+
+  <h3>Carrinho de Compras:</h3>
+  <div id="carrinho"></div>
+  
+  <p><strong>Total:</strong> R$<span id="total">0.00</span></p>
+
+  <input type="text" id="produtoNome" placeholder="Nome do Produto">
+  <button onclick="adicionarAoCarrinho()">Adicionar ao Carrinho</button>
+
+  <h4>Remover do Carrinho:</h4>
+  <input type="text" id="produtoRemover" placeholder="Nome do Produto">
+  <button onclick="removerDoCarrinho()">Remover</button>
+
+  <script>
+    // Array de produtos disponíveis
+    let produtos = [
+      { nome: "Notebook", preco: 3500.00, quantidade: 5 },
+      { nome: "Smartphone", preco: 2500.00, quantidade: 8 },
+      { nome: "Tablet", preco: 1200.00, quantidade: 10 },
+      { nome: "Câmera", preco: 1800.00, quantidade: 2 },
+      { nome: "Headset", preco: 300.00, quantidade: 15 }
+    ];
+
+    // Array para o carrinho de compras
+    let carrinho = [];
+
+    // Exibe os produtos disponíveis
+    function exibirProdutos() {
+      const listaProdutos = document.getElementById('produtos');
+      listaProdutos.innerHTML = produtos.map(p => 
+        `${p.nome} - R$${p.preco.toFixed(2)} - Estoque: ${p.quantidade}`
+      ).join('<br>');
+    }
+
+    // Adiciona um produto ao carrinho
+    function adicionarAoCarrinho() {
+      const nomeProduto = document.getElementById('produtoNome').value;
+      const produto = produtos.find(p => p.nome.toLowerCase() === nomeProduto.toLowerCase());
+      
+      if (produto && produto.quantidade > 0) {
+        carrinho.push({ nome: produto.nome, preco: produto.preco });
+        produto.quantidade--; // Remove 1 unidade do estoque
+        atualizarCarrinho();
+        exibirProdutos();
+      } else {
+        alert("Produto não encontrado ou fora de estoque!");
+      }
+    }
+
+    // Remove um produto do carrinho
+    function removerDoCarrinho() {
+      const nomeProdutoRemover = document.getElementById('produtoRemover').value;
+      const index = carrinho.findIndex(p => p.nome.toLowerCase() === nomeProdutoRemover.toLowerCase());
+      
+      if (index > -1) {
+        // Devolve o produto ao estoque
+        const produto = produtos.find(p => p.nome.toLowerCase() === nomeProdutoRemover.toLowerCase());
+        produto.quantidade++;
+
+        carrinho.splice(index, 1); // Remove o item do carrinho
+        atualizarCarrinho();
+        exibirProdutos();
+      } else {
+        alert("Produto não está no carrinho!");
+      }
+    }
+
+    // Atualiza o carrinho, calcula o total e exibe
+    function atualizarCarrinho() {
+      const listaCarrinho = document.getElementById('carrinho');
+      const totalElement = document.getElementById('total');
+
+      // Ordena o carrinho por preço em ordem crescente
+      carrinho.sort((a, b) => a.preco - b.preco);
+
+      listaCarrinho.innerHTML = carrinho.map(p => 
+        `${p.nome} - R$${p.preco.toFixed(2)}`
+      ).join('<br>');
+
+      // Calcula o total
+      const total = carrinho.reduce((sum, p) => sum + p.preco, 0);
+      totalElement.innerHTML = total.toFixed(2);
+    }
+
+    // Inicializa a exibição dos produtos disponíveis
+    exibirProdutos();
+  </script>
+</body>
+</html>
